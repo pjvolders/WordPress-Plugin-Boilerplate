@@ -59,6 +59,15 @@ class PluginName {
 	protected $plugin_screen_hook_suffix = null;
 
 	/**
+	 * PJVSettingsSection object containing the plugins settings
+	 * 
+	 * @since    1.0.0
+	 *
+	 * @var		 object
+	 */
+	protected $settings = null;
+
+	/**
 	 * Initialize the plugin by setting localization, filters, and administration functions.
 	 *
 	 * @since     1.0.0
@@ -68,8 +77,8 @@ class PluginName {
 		// Load plugin text domain
 		add_action( 'init', array( $this, 'load_plugin_textdomain' ) );
 
-		// Add the options page and menu item.
-		// add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
+		// Add the options page and settings storage object.
+		add_action( 'pjv-settings-loaded', array( $this, 'init_pjv_settings_api' ) );
 
 		// Load admin style sheet and JavaScript.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
@@ -201,23 +210,15 @@ class PluginName {
 	 *
 	 * @since    1.0.0
 	 */
-	public function add_plugin_admin_menu() {
+	public function init_pjv_settings_api() {
 
-		/*
-		 * TODO:
-		 *
-		 * Change 'Page Title' to the title of your plugin admin page
-		 * Change 'Menu Text' to the text for menu item for the plugin settings page
-		 * Change 'plugin-name' to the name of your plugin
-		 */
-		$this->plugin_screen_hook_suffix = add_plugins_page(
-			__( 'Page Title', $this->plugin_slug ),
-			__( 'Menu Text', $this->plugin_slug ),
-			'read',
-			$this->plugin_slug,
-			array( $this, 'display_plugin_admin_page' )
-		);
-
+		// TODO Change Plugin Name to the name for the settings page
+		$page = new PJVSettingsPage( $this->plugin_slug.'-settings-page', 'Plugin Name' );
+		$this->settings = $page->new_section( $this->plugin_slug.'-settings-section' );
+		
+		// TODO Register some settings
+		// $this->settings->new_setting('setting_id', 'Setting Name', 'dropdown');
+		
 	}
 
 	/**
